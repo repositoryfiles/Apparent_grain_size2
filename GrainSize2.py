@@ -1,8 +1,9 @@
 # coding: utf-8
 #ライブラリのインポート
 import cv2
-import tkinter
-from tkinter import filedialog
+import tkinter as tk
+import tkinter.filedialog as filedialog
+import tkinter.simpledialog as simpledialog
 import numpy as np
 import math
 
@@ -15,14 +16,11 @@ DeletePoints = 0
 
 # PictureWidthとMagnificationは組織画像に合致した値に設定すること！
 # 下は、画像を幅142mmで表示すると、倍率1000倍の組織画像になるという設定である
-PictureWidth = 142 #画像の幅（単位：mm）
-Magnification = 1000 #撮影倍率
-miniGraSize=10/PictureWidth #（認識させる最小サイズ）/（画像の幅）
+#PictureWidth = 142 #画像の幅（単位：mm）
+#Magnification = 1000 #撮影倍率
+PictureWidth = 100 #画像の幅（単位：mm）
+Magnification = 100 #撮影倍率
 Width=640#表示させる画像の幅（高さは元画像から計算）
-
-Radius1 = 79.58/2/PictureWidth
-Radius2 = 53.05/2/PictureWidth
-Radius3 = 26.53/2/PictureWidth
 
 #マウスの操作があるとき呼ばれる関数
 def callback(event, x, y, flags, param):
@@ -87,11 +85,30 @@ def DrawFigure():
     cv2.imshow("Result", copy_img_color)
 
 #ファイル選択（c:\Dataの拡張子jpgを開く場合）
-root=tkinter.Tk()
-root.withdraw()
+tk.Tk().withdraw()
 fTyp = [("jpg", "*.jpg"), ("BMP", "*.bmp"), ("png", "*.png"), ("tiff", "*.tif")] #画像の種類を選択
 iDir='C:/Data'
 fname=filedialog.askopenfilename(filetypes=fTyp,initialdir=iDir) 
+
+#ダイアログでPictureWidthとMagnificationを入力
+tk.Tk().withdraw()
+Magnification = simpledialog.askstring('画像の倍率入力', '画像の倍率を入力してください')
+tk.Tk().withdraw()
+PictureWidth = simpledialog.askstring('画像の幅入力', f'{Magnification}倍で表示するための画像の幅を入力してください')
+Magnification = int(Magnification)
+PictureWidth = int(PictureWidth)
+print(f'Magnification = {Magnification}, type = {type(Magnification)}, PictureWidth = {PictureWidth}, type = {type(PictureWidth)}')
+
+#ここに、解析用の画像の幅と倍率の計算処理を入れる#
+
+
+
+
+miniGraSize=10/PictureWidth #（認識させる最小サイズ）/（画像の幅）
+Radius1 = 79.58/2/PictureWidth
+Radius2 = 53.05/2/PictureWidth
+Radius3 = 26.53/2/PictureWidth
+
 
 #ファイル読み込み
 img_color= cv2.imread(fname) #画像ファイルのデータをimg_colorに代入
