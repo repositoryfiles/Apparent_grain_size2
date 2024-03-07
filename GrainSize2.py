@@ -92,31 +92,28 @@ fname=filedialog.askopenfilename(filetypes=fTyp,initialdir=iDir)
 
 #ダイアログでPictureWidthとMagnificationを入力
 tk.Tk().withdraw()
-Magnification = simpledialog.askstring('画像の倍率入力', '画像の倍率を入力してください')
+PhotoMagnification = simpledialog.askstring('画像の倍率入力', '画像の倍率を入力してください', initialvalue="1000")
 tk.Tk().withdraw()
-PictureWidth = simpledialog.askstring('画像の幅入力', f'{Magnification}倍で表示するための画像の幅を入力してください')
-Magnification = int(Magnification)
-PictureWidth = int(PictureWidth)
-print(f'Magnification = {Magnification}, type = {type(Magnification)}, PictureWidth = {PictureWidth}, type = {type(PictureWidth)}')
+PhotoPictureWidth = simpledialog.askstring('画像の幅入力', f'{PhotoMagnification}倍で表示するための画像の幅を入力してください', initialvalue="142")
+PhotoMagnification = int(PhotoMagnification)
+PhotoPictureWidth = int(PhotoPictureWidth)
+print(f'Photo Magnification = {PhotoMagnification}, type = {type(PhotoMagnification)}, Photo Picture Width = {PictureWidth}, type = {type(PhotoPictureWidth)}')
 
-#ここに、解析用の画像の幅と倍率の計算処理を入れる#
+#ファイル読み込み
+img_color= cv2.imread(fname) #画像ファイルのデータをimg_colorに代入
+img_gray = cv2.imread(fname, cv2.IMREAD_GRAYSCALE) #画像ファイルのデータをグレースケールでimg_grayに代入
+img_height, img_width = img_gray.shape #画像ファイルのサイズの取得
+Height=int(Width*img_height/img_width)
 
-
-
+#ここに、解析用の画像の幅と倍率の計算処理を入れる
+PhotoPictureHeight = PhotoPictureWidth * img_height/img_width
+Magnification = (140/PhotoPictureWidth)*PhotoMagnification
+PictureWidth = PhotoPictureWidth * Magnification / PhotoMagnification
 
 miniGraSize=10/PictureWidth #（認識させる最小サイズ）/（画像の幅）
 Radius1 = 79.58/2/PictureWidth
 Radius2 = 53.05/2/PictureWidth
 Radius3 = 26.53/2/PictureWidth
-
-
-#ファイル読み込み
-img_color= cv2.imread(fname) #画像ファイルのデータをimg_colorに代入
-img_gray = cv2.imread(fname, cv2.IMREAD_GRAYSCALE) #画像ファイルのデータをグレースケールでimg_grayに代入
-
-img_height, img_width = img_gray.shape #画像ファイルのサイズの取得
-
-Height=int(Width*img_height/img_width)
 
 img_color = cv2.resize(img_color, (Width, Height))
 img_gray = cv2.resize(img_gray, (Width, Height))
