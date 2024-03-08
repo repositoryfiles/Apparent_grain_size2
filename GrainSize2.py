@@ -21,6 +21,7 @@ DeletePoints = 0
 PictureWidth = 100 #画像の幅（単位：mm）
 Magnification = 100 #撮影倍率
 Width=640#表示させる画像の幅（高さは元画像から計算）
+AnalysisPictureHeight = 140
 
 #マウスの操作があるとき呼ばれる関数
 def callback(event, x, y, flags, param):
@@ -65,9 +66,10 @@ def DrawFigure():
     center_x = int(Width / 2)
     center_y = int(Height / 2)
 
-    cv2.circle(copy_img_color, (center_x, center_y), int(Radius1*Width), (0,0,255), thickness=2) #円描画
-    cv2.circle(copy_img_color, (center_x, center_y), int(Radius2*Width), (0,0,255), thickness=2) #円描画
-    cv2.circle(copy_img_color, (center_x, center_y), int(Radius3*Width), (0,0,255), thickness=2) #円描画
+    #cv2.line(copy_img_color, center_x-, pt2, color, thickness=2, lineType=cv2.LINE_8, shift=0)
+    #cv2.circle(copy_img_color, (center_x, center_y), int(Radius1*Width), (0,0,255), thickness=2) #円描画
+    #cv2.circle(copy_img_color, (center_x, center_y), int(Radius2*Width), (0,0,255), thickness=2) #円描画
+    #cv2.circle(copy_img_color, (center_x, center_y), int(Radius3*Width), (0,0,255), thickness=2) #円描画
 
     for i in pt:
         cv2.circle(copy_img_color, pt[i], int(Width/100), (255,0,0), thickness=2) #円描画
@@ -107,8 +109,9 @@ Height=int(Width*img_height/img_width)
 
 #ここに、解析用の画像の幅と倍率の計算処理を入れる
 PhotoPictureHeight = PhotoPictureWidth * img_height/img_width
-Magnification = (140/PhotoPictureWidth)*PhotoMagnification
+Magnification = (AnalysisPictureHeight/PhotoPictureHeight)*PhotoMagnification
 PictureWidth = PhotoPictureWidth * Magnification / PhotoMagnification
+PictureHeight = PictureWidth * img_height/img_width
 
 miniGraSize=10/PictureWidth #（認識させる最小サイズ）/（画像の幅）
 Radius1 = 79.58/2/PictureWidth
@@ -136,11 +139,9 @@ center_y = int(Height / 2)
 
 Flag1 = 0
 Flag1_1 = 0
-
-for i in range(360):
-    theata_rad = i * math.pi/180
-    x1 = int(center_x + Radius1*Width * math.cos(theata_rad))
-    y1 = int(center_y + Radius1*Width * math.sin(theata_rad))
+for i in range(1000):
+    x1 = int((PictureWidth/2 - 60)/PictureWidth*Width)
+    y1 = int((70-50 + i / 10)/PictureHeight*Height)
     kido = img_gray_inv_binary[y1, x1]
     if kido == 255 :
         Flag1 = 1
@@ -156,11 +157,9 @@ for i in range(360):
 
 Flag2 = 0
 Flag2_1 = 0
-
-for i in range(360):
-    theata_rad = i * math.pi/180
-    x1 = int(center_x + Radius2*Width * math.cos(theata_rad))
-    y1 = int(center_y + Radius2*Width * math.sin(theata_rad))
+for i in range(1000):
+    x1 = int((PictureWidth/2 - 50 + i / 10)/PictureWidth*Width)
+    y1 = int((130)/PictureHeight*Height)
     kido = img_gray_inv_binary[y1, x1]
     if kido == 255 :
         Flag2 = 1
@@ -176,11 +175,9 @@ for i in range(360):
 
 Flag3 = 0
 Flag3_1 = 0
-
-for i in range(360):
-    theata_rad = i * math.pi/180
-    x1 = int(center_x + Radius3*Width * math.cos(theata_rad))
-    y1 = int(center_y + Radius3*Width * math.sin(theata_rad))
+for i in range(1000):
+    x1 = int((PictureWidth/2 - 50 + i / 10)/PictureWidth*Width)
+    y1 = int((70-50 + i / 10)/PictureHeight*Height)
     kido = img_gray_inv_binary[y1, x1]
     if kido == 255 :
         Flag3 = 1
@@ -193,6 +190,24 @@ for i in range(360):
     else :
         continue
     Flag3_1 = Flag3
+
+Flag4 = 0
+Flag4_1 = 0
+for i in range(1000):
+    x1 = int((PictureWidth/2 - 50 + i / 10)/PictureWidth*Width)
+    y1 = int((70+50 - i / 10)/PictureHeight*Height)
+    kido = img_gray_inv_binary[y1, x1]
+    if kido == 255 :
+        Flag4 = 1
+        if Flag4 == 1 and Flag4_1 == 0:
+            m = n
+            pt[n] = (x1, y1)
+            n = n + 1
+    elif kido != 255 :
+        Flag4 = 0
+    else :
+        continue
+    Flag4_1 = Flag4
 
 DrawFigure()
 
