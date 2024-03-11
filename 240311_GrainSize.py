@@ -25,32 +25,41 @@ Radius1 = 79.58/2/PictureWidth
 Radius2 = 53.05/2/PictureWidth
 Radius3 = 26.53/2/PictureWidth
 
+center_x = 100
+center_y = 100
+
 #マウスの操作があるとき呼ばれる関数
 def callback(event, x, y, flags, param):
     global pt, m, n, AddPoints, DeletePoints
 
     #マウスの左ボタンがクリックされたとき
     if event == cv2.EVENT_LBUTTONDOWN:
-
-        x_value = x-center_x
-        y_value = y-center_y
+        i = 0
+        for _pt in testline_pt:
+            #点(x,y)とtestline_ptとの距離を求める
+            distance = math.sqrt(math.pow((x - _pt[1][i]), 2) + math.pow((y - _pt[0][i]), 2))
+            print(distance)
+            i += 1
+        #testline_pt
+        #x_value = x-center_x
+        #y_value = y-center_y
 
         #三つのほぼ円周上を左クリックしたときのみ点を追加
-        if abs(math.sqrt(x_value**2 + y_value**2) - int(Radius1*Width)) < 2 \
-        or abs(math.sqrt(x_value**2 + y_value**2) - int(Radius2*Width)) < 2 \
-        or abs(math.sqrt(x_value**2 + y_value**2) - int(Radius3*Width)) < 2:
-            m = n
-            pt[n] = (x, y)
-            n = n + 1
-            AddPoints = AddPoints + 1
-            DrawFigure()
+        #if abs(math.sqrt(x_value**2 + y_value**2) - int(Radius1*Width)) < 2 \
+        #or abs(math.sqrt(x_value**2 + y_value**2) - int(Radius2*Width)) < 2 \
+        #or abs(math.sqrt(x_value**2 + y_value**2) - int(Radius3*Width)) < 2:
+        #    m = n
+        #    pt[n] = (y, x)
+        #    n = n + 1
+        #    AddPoints = AddPoints + 1
+        #    DrawFigure()
 
     #マウスの右ボタンがクリックされたとき
     if event == cv2.EVENT_RBUTTONDOWN:
         flag = 0
         #pt[]からクリック位置に近い点を探す
         for i in pt:
-            if abs(pt[i][0] - x) < 5 and abs(pt[i][1] - y) < 5:
+            if abs(pt[i][0] - y) < 5 and abs(pt[i][1] - x) < 5:
                 point = i
                 flag = 1
         if flag == 1:
@@ -73,7 +82,7 @@ def DrawFigure():
     cv2.circle(copy_img_color, (center_x, center_y), int(Radius3*Width), (0,0,255), thickness=2) #円描画
 
     for i in pt:
-        cv2.circle(copy_img_color, pt[i], int(Width/100), (255,0,0), thickness=2) #円描画
+        cv2.circle(copy_img_color, (pt[i][1], pt[i][0]), int(Width/100), (255,0,0), thickness=2) #円描画
 
     points_num = len(pt)
     #cv2.putText(copy_img_color, "Number of grain boundary : " + str(len(pt)) , (int(Width/20), int(Height/15)), cv2.FONT_HERSHEY_PLAIN, Height/400, (255, 255, 255), 2, cv2.LINE_AA)
@@ -96,7 +105,7 @@ def generate_testline_point():
         theata_rad = i * math.pi/180
         x1 = int(center_x + Radius1*Width * math.cos(theata_rad))
         y1 = int(center_y + Radius1*Width * math.sin(theata_rad))
-        testline_pt[n] = (x1, y1)
+        testline_pt[n] = (y1, x1)
         n = n + 1
         #print(n,x1,y1)
 
@@ -104,7 +113,7 @@ def generate_testline_point():
         theata_rad = i * math.pi/180
         x1 = int(center_x + Radius2*Width * math.cos(theata_rad))
         y1 = int(center_y + Radius2*Width * math.sin(theata_rad))
-        testline_pt[n] = (x1, y1)
+        testline_pt[n] = (y1, x1)
         n = n + 1
         #print(n,x1,y1)
 
@@ -112,7 +121,7 @@ def generate_testline_point():
         theata_rad = i * math.pi/180
         x1 = int(center_x + Radius3*Width * math.cos(theata_rad))
         y1 = int(center_y + Radius3*Width * math.sin(theata_rad))
-        testline_pt[n] = (x1, y1)
+        testline_pt[n] = (y1, x1)
         n = n + 1
         #print(n,x1,y1)
 
@@ -155,15 +164,13 @@ Flag1_1 = 0
 
 generate_testline_point()
 
-print(len(testline_pt))
-
-for tp in testline_pt:
-    kido = img_gray_inv_binary[testline_pt[tp]]
+for _pt in testline_pt:
+    kido = img_gray_inv_binary[testline_pt[_pt]]
     if kido == 255 :
         Flag1 = 1
         if Flag1 == 1 and Flag1_1 == 0:
             m = n
-            pt[n] = (x1, y1)
+            pt[n] = testline_pt[_pt]
             n = n + 1
     elif kido != 255 :
         Flag1 = 0
