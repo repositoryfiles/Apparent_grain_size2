@@ -13,13 +13,13 @@ testline_pts = []
 n = 0
 AddPoints = 0
 DeletePoints = 0
-#Method = 'Circles' # 'Circles' または 'Lines' を指定
 Method = 'Lines' # 'Circles' または 'Lines' を指定
 
 # PhotoPictureWidthとPhotoMagnificationは撮影環境により変わるため、組織画像に合致した値に設定すること！
 # 以下のPhotoPictureWidthとPhotoMagnificationは、画像を幅142mmで表示すると、倍率1000倍の組織画像になるという設定である
-PhotoPictureWidth = 142 #画像の幅（撮影倍率で表示時の画像の幅）
+PhotoPictureWidth = 142 #画像の幅（撮影倍率で表示時の画像の幅（mm））
 PhotoMagnification = 1000 #撮影倍率
+minSize = 10 #（認識させる最小サイズ（μm）、上記の設定の場合、1000倍なのでminSize = 10は10μmを表す）
 
 # 次の二つの値は変えなくてよい
 Width=640 #画像のデフォルトの表示幅（高さは元画像から計算）、ディスプレイで見やすい大きさに設定
@@ -165,7 +165,7 @@ PhotoPictureHeight = PhotoPictureWidth * img_height/img_width
 Magnification = (AnalysisPictureHeight/PhotoPictureHeight)*PhotoMagnification
 PictureWidth = PhotoPictureWidth * Magnification / PhotoMagnification
 PictureHeight = PictureWidth * img_height/img_width
-miniGraSize=10/PictureWidth #（認識させる最小サイズ）/（画像の幅）
+miniGraSize=minSize/PictureWidth #（認識させる最小サイズ）/（画像の幅）
 
 #3個の同心円の半径を計算
 Radius1 = 79.58/2/PictureWidth
