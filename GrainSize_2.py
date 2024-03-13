@@ -11,9 +11,7 @@ pts = []
 testline_pts = []
 
 n = 0
-AddPoints = 0
-DeletePoints = 0
-Method = 'Lines' # 'Circles' または 'Lines' を指定
+Method = 'Circles' # 'Circles' または 'Lines' を指定
 
 # PhotoPictureWidthとPhotoMagnificationは撮影環境により変わるため、組織画像に合致した値に設定すること！
 # 以下のPhotoPictureWidthとPhotoMagnificationは、画像を幅142mmで表示すると、倍率1000倍の組織画像になるという設定である
@@ -34,10 +32,9 @@ def callback(event, x, y, flags, param):
         i = 0
         for testline_pt in testline_pts:
             #クリック位置(x,y)とtestline_ptsとの距離を求める
-            if math.sqrt(math.pow((x - testline_pt[1]), 2) + math.pow((y - testline_pt[0]), 2)) < 4:
+            if math.sqrt(math.pow((x - testline_pt[1]), 2) + math.pow((y - testline_pt[0]), 2)) < 2:
                 pts.append([y, x])
                 n = n + 1
-                AddPoints = AddPoints + 1
                 DrawFigure()
 
     #マウスの右ボタンがクリックされたとき
@@ -46,14 +43,13 @@ def callback(event, x, y, flags, param):
         i = 0
         #ptsからクリック位置に近い点を探す
         for pt in pts:
-            if abs(pt[0] - y) < 5 and abs(pt[1] - x) < 5:
+            if math.sqrt(math.pow((pt[0] - y), 2) + math.pow((pt[1] - x), 2)) < 2:
                 point = i
                 flag = 1
             i += 1
         if flag == 1:
             pts.pop(point)
-            DeletePoints = DeletePoints + 1
-        DrawFigure()
+            DrawFigure()
 
 # 試験線と粒界位置を更新描画
 def DrawFigure():
@@ -72,10 +68,10 @@ def DrawFigure():
         cv2.circle(copy_img_color, (center_x, center_y), int(Radius3*Width), (0,0,255), thickness=2) #円描画
 
     elif Method == 'Lines':
-        cv2.line(copy_img_color, (int((PictureWidth/2 - 60)/PictureWidth*Width), int((20)/PictureHeight*Height)), (int((PictureWidth/2 - 60)/PictureWidth*Width), int((70-50 + 100)/PictureHeight*Height)), (0,0,255), thickness=2, lineType=cv2.LINE_8, shift=0)
+        cv2.line(copy_img_color, (int((PictureWidth/2 - 60)/PictureWidth*Width), int((20)/PictureHeight*Height)), (int((PictureWidth/2 - 60)/PictureWidth*Width), int((120)/PictureHeight*Height)), (0,0,255), thickness=2, lineType=cv2.LINE_8, shift=0)
         cv2.line(copy_img_color, (int((PictureWidth/2 - 50)/PictureWidth*Width), int((130)/PictureHeight*Height)), (int((PictureWidth/2 + 50)/PictureWidth*Width), int((130)/PictureHeight*Height)), (0,0,255), thickness=2, lineType=cv2.LINE_8, shift=0)
-        cv2.line(copy_img_color, (int((PictureWidth/2 - 50)/PictureWidth*Width), int((20)/PictureHeight*Height)), (int((PictureWidth/2 + 50)/PictureWidth*Width), int((70-50 + 100)/PictureHeight*Height)), (0,0,255), thickness=2, lineType=cv2.LINE_8, shift=0)
-        cv2.line(copy_img_color, (int((PictureWidth/2 - 50)/PictureWidth*Width), int((120)/PictureHeight*Height)), (int((PictureWidth/2 + 50)/PictureWidth*Width), int((70+50 - 100)/PictureHeight*Height)), (0,0,255), thickness=2, lineType=cv2.LINE_8, shift=0)
+        cv2.line(copy_img_color, (int((PictureWidth/2 - 50)/PictureWidth*Width), int((20)/PictureHeight*Height)), (int((PictureWidth/2 + 50)/PictureWidth*Width), int((120)/PictureHeight*Height)), (0,0,255), thickness=2, lineType=cv2.LINE_8, shift=0)
+        cv2.line(copy_img_color, (int((PictureWidth/2 - 50)/PictureWidth*Width), int((120)/PictureHeight*Height)), (int((PictureWidth/2 + 50)/PictureWidth*Width), int((20)/PictureHeight*Height)), (0,0,255), thickness=2, lineType=cv2.LINE_8, shift=0)
 
     for _pt in pts:
         cv2.circle(copy_img_color, (_pt[1], _pt[0]), int(Width/100), (255,0,0), thickness=2) #円描画
