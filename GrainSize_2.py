@@ -136,24 +136,24 @@ def generate_testline_point():
 
     # 4本の直線の座標値
     elif Method == 'Lines':
-        for i in range(100):
+        for i in range(50):
             x1 = int((PictureWidth/2 - 60) / PictureWidth*Width)
-            y1 = int((PictureHeight/2 - 50 + i) / PictureHeight*Height)
+            y1 = int((PictureHeight/2 - 50 + i * 2) / PictureHeight*Height)
             testline_pts.append([y1, x1])
 
-        for i in range(100):
-            x2 = int((PictureWidth/2 - 50 + i) / PictureWidth*Width)
+        for i in range(50):
+            x2 = int((PictureWidth/2 - 50 + i * 2) / PictureWidth*Width)
             y2 = int((PictureHeight/2 + 60) / PictureHeight*Height)
             testline_pts.append([y2, x2])
 
-        for i in range(106):
-            x3 = int((PictureWidth/2 - 53 + i) / PictureWidth*Width)
-            y3 = int((PictureHeight/2 - 53 + i) / PictureHeight*Height)
+        for i in range(53):
+            x3 = int((PictureWidth/2 - 53 + i * 2) / PictureWidth*Width)
+            y3 = int((PictureHeight/2 - 53 + i * 2) / PictureHeight*Height)
             testline_pts.append([y3, x3])
 
-        for i in range(106):
-            x4 = int((PictureWidth/2 - 53 + i) / PictureWidth*Width)
-            y4 = int((PictureHeight/2 + 53 - i) / PictureHeight*Height)
+        for i in range(53):
+            x4 = int((PictureWidth/2 - 53 + i * 2) / PictureWidth*Width)
+            y4 = int((PictureHeight/2 + 53 - i * 2) / PictureHeight*Height)
             testline_pts.append([y4, x4])
 
 
