@@ -11,7 +11,7 @@ pts = []
 testline_pts = []
 
 n = 0
-Method = 'Circles' # 'Circles' または 'Lines' を指定
+Method = 'Lines' # 'Circles' または 'Lines' を指定
 
 # PhotoPictureWidthとPhotoMagnificationは撮影環境により変わるため、組織画像に合致した値に設定すること！
 # 以下のPhotoPictureWidthとPhotoMagnificationは、画像を幅142mmで表示すると、倍率1000倍の組織画像になるという設定である
@@ -32,7 +32,7 @@ def callback(event, x, y, flags, param):
         i = 0
         for testline_pt in testline_pts:
             #クリック位置(x,y)とtestline_ptsとの距離を求める
-            if math.sqrt(math.pow((x - testline_pt[1]), 2) + math.pow((y - testline_pt[0]), 2)) < 2:
+            if math.sqrt(math.pow((x - testline_pt[1]), 2) + math.pow((y - testline_pt[0]), 2)) < 3:
                 pts.append([y, x])
                 n = n + 1
                 DrawFigure()
@@ -43,7 +43,7 @@ def callback(event, x, y, flags, param):
         i = 0
         #ptsからクリック位置に近い点を探す
         for pt in pts:
-            if math.sqrt(math.pow((pt[0] - y), 2) + math.pow((pt[1] - x), 2)) < 2:
+            if math.sqrt(math.pow((pt[0] - y), 2) + math.pow((pt[1] - x), 2)) < 3:
                 point = i
                 flag = 1
             i += 1
@@ -62,79 +62,98 @@ def DrawFigure():
     center_x = int(Width / 2)
     center_y = int(Height / 2)
 
+    # 試験線の描画
+    # 3個の同心円
     if Method == 'Circles':
-        cv2.circle(copy_img_color, (center_x, center_y), int(Radius1*Width), (0,0,255), thickness=2) #円描画
-        cv2.circle(copy_img_color, (center_x, center_y), int(Radius2*Width), (0,0,255), thickness=2) #円描画
-        cv2.circle(copy_img_color, (center_x, center_y), int(Radius3*Width), (0,0,255), thickness=2) #円描画
-
+        cv2.circle(copy_img_color, (center_x, center_y), int(Radius1 * Width), (0, 0, 255), thickness=2)
+        cv2.circle(copy_img_color, (center_x, center_y), int(Radius2 * Width), (0, 0, 255), thickness=2)
+        cv2.circle(copy_img_color, (center_x, center_y), int(Radius3 * Width), (0, 0, 255), thickness=2)
+    # 4本の直線
     elif Method == 'Lines':
-        cv2.line(copy_img_color, (int((PictureWidth/2 - 60)/PictureWidth*Width), int((20)/PictureHeight*Height)), (int((PictureWidth/2 - 60)/PictureWidth*Width), int((120)/PictureHeight*Height)), (0,0,255), thickness=2, lineType=cv2.LINE_8, shift=0)
-        cv2.line(copy_img_color, (int((PictureWidth/2 - 50)/PictureWidth*Width), int((130)/PictureHeight*Height)), (int((PictureWidth/2 + 50)/PictureWidth*Width), int((130)/PictureHeight*Height)), (0,0,255), thickness=2, lineType=cv2.LINE_8, shift=0)
-        cv2.line(copy_img_color, (int((PictureWidth/2 - 50)/PictureWidth*Width), int((20)/PictureHeight*Height)), (int((PictureWidth/2 + 50)/PictureWidth*Width), int((120)/PictureHeight*Height)), (0,0,255), thickness=2, lineType=cv2.LINE_8, shift=0)
-        cv2.line(copy_img_color, (int((PictureWidth/2 - 50)/PictureWidth*Width), int((120)/PictureHeight*Height)), (int((PictureWidth/2 + 50)/PictureWidth*Width), int((20)/PictureHeight*Height)), (0,0,255), thickness=2, lineType=cv2.LINE_8, shift=0)
+        # 直線の始点と終点の座標値
+        x1 = int((PictureWidth / 2 - 60) /PictureWidth * Width)
+        y1 = int((PictureHeight / 2 - 50)/PictureHeight * Height)
+        y2 = int((PictureHeight / 2 + 50)/PictureHeight * Height)
+        x2 = int((PictureWidth / 2 - 50) /PictureWidth * Width)
+        x3 = int((PictureWidth / 2 + 50) /PictureWidth * Width)
+        y3 = int((PictureHeight / 2 + 60)/PictureHeight * Height)
+        x4 = int((PictureWidth / 2 - 53) /PictureWidth * Width)
+        y4 = int((PictureHeight / 2 - 53)/PictureHeight * Height)
+        x5 = int((PictureWidth / 2 + 53) /PictureWidth * Width)
+        y5 = int((PictureHeight / 2 + 53)/PictureHeight * Height)
 
+        cv2.line(copy_img_color, (x1, y1), (x1, y2), (0, 0, 255), thickness=2, lineType=cv2.LINE_8, shift=0)
+        cv2.line(copy_img_color, (x2, y3), (x3, y3), (0, 0, 255), thickness=2, lineType=cv2.LINE_8, shift=0)
+        cv2.line(copy_img_color, (x4, y4), (x5, y5), (0, 0, 255), thickness=2, lineType=cv2.LINE_8, shift=0)
+        cv2.line(copy_img_color, (x4, y5), (x5, y4), (0, 0, 255), thickness=2, lineType=cv2.LINE_8, shift=0)
+
+    # 粒界位置の描画
     for _pt in pts:
         cv2.circle(copy_img_color, (_pt[1], _pt[0]), int(Width/100), (255,0,0), thickness=2) #円描画
 
+    # 粒度番号などの表示
     points_num = len(pts)
-
     point_num_per_1mm = points_num / (500 / Magnification)
 	# G0551の式A.11と式A.14の関係を使用（A.11からG(ASTM)を求め、それA.14を使ってGに変換）
     grain_number = -3.3335 + 6.6439 * math.log10(point_num_per_1mm)
-    print(f'\nMagnification (for picture height = {AnalysisPictureHeight:.0f} mm): {Magnification:.0f}')
+    print(f'\nMethod : {Method}')
+    print(f'Magnification (for picture height = {AnalysisPictureHeight:.0f} mm): {Magnification:.0f}')
     print(f'Number of grain boundaries : {points_num}')
     print(f'Number of grain boundaries per 1 mm : {point_num_per_1mm:.1f}')
     print(f'Apparent grain size : {grain_number :.1f}')
     #cv2.putText(copy_img_color, "Apparent grain size : " + f'{grain_number :.1f}' , (int(Width/20), int(Height/15)), cv2.FONT_HERSHEY_PLAIN, Height/400, (0, 0, 255), 2, cv2.LINE_AA)
 
+    # windowの描画
     cv2.namedWindow("Result", 16) #組織画像のwindow内で右クリックのメニューを非表示にする
     cv2.imshow("Result", copy_img_color)
 
-# 試験線の座標値を抽出
+# 試験線の座標値抽出
 def generate_testline_point():
 
     global testline_pts
+    # 3個の同心円の座標値
     if Method == 'Circles':
         center_x = int(Width / 2)
         center_y = int(Height / 2)
 
         for i in range(180):
             theata_rad = 2 * i * math.pi/180
-            x1 = int(center_x + Radius1*Width * math.cos(theata_rad))
-            y1 = int(center_y + Radius1*Width * math.sin(theata_rad))
+            x1 = int(center_x + Radius1 * Width * math.cos(theata_rad))
+            y1 = int(center_y + Radius1 * Width * math.sin(theata_rad))
             testline_pts.append([y1, x1])
 
         for i in range(120):
             theata_rad = 3 * i * math.pi/180
-            x2 = int(center_x + Radius2*Width * math.cos(theata_rad))
-            y2 = int(center_y + Radius2*Width * math.sin(theata_rad))
+            x2 = int(center_x + Radius2 * Width * math.cos(theata_rad))
+            y2 = int(center_y + Radius2 * Width * math.sin(theata_rad))
             testline_pts.append([y2, x2])
 
         for i in range(90):
             theata_rad = 4 * i * math.pi/180
-            x3 = int(center_x + Radius3*Width * math.cos(theata_rad))
-            y3 = int(center_y + Radius3*Width * math.sin(theata_rad))
+            x3 = int(center_x + Radius3 * Width * math.cos(theata_rad))
+            y3 = int(center_y + Radius3 * Width * math.sin(theata_rad))
             testline_pts.append([y3, x3])
 
+    # 4本の直線の座標値
     elif Method == 'Lines':
         for i in range(100):
-            x1 = int((PictureWidth/2 - 60)/PictureWidth*Width)
-            y1 = int((20 + i)/PictureHeight*Height)
+            x1 = int((PictureWidth/2 - 60) / PictureWidth*Width)
+            y1 = int((PictureHeight/2 - 50 + i) / PictureHeight*Height)
             testline_pts.append([y1, x1])
 
         for i in range(100):
-            x2 = int((PictureWidth/2 - 50 + i)/PictureWidth*Width)
-            y2 = int((130)/PictureHeight*Height)
+            x2 = int((PictureWidth/2 - 50 + i) / PictureWidth*Width)
+            y2 = int((PictureHeight/2 + 60) / PictureHeight*Height)
             testline_pts.append([y2, x2])
 
-        for i in range(100):
-            x3 = int((PictureWidth/2 - 50 + i)/PictureWidth*Width)
-            y3 = int((20 + i)/PictureHeight*Height)
+        for i in range(106):
+            x3 = int((PictureWidth/2 - 53 + i) / PictureWidth*Width)
+            y3 = int((PictureHeight/2 - 53 + i) / PictureHeight*Height)
             testline_pts.append([y3, x3])
 
-        for i in range(100):
-            x4 = int((PictureWidth/2 - 50 + i)/PictureWidth*Width)
-            y4 = int((120 - i)/PictureHeight*Height)
+        for i in range(106):
+            x4 = int((PictureWidth/2 - 53 + i) / PictureWidth*Width)
+            y4 = int((PictureHeight/2 + 53 - i) / PictureHeight*Height)
             testline_pts.append([y4, x4])
 
 
@@ -157,28 +176,28 @@ img_color = cv2.resize(img_color, (Width, Height))
 img_gray = cv2.resize(img_gray, (Width, Height))
 
 #ここに、解析用の画像の幅と倍率の計算処理を入れる
-PhotoPictureHeight = PhotoPictureWidth * img_height/img_width
-Magnification = (AnalysisPictureHeight/PhotoPictureHeight)*PhotoMagnification
+PhotoPictureHeight = PhotoPictureWidth * img_height / img_width
+Magnification = (AnalysisPictureHeight / PhotoPictureHeight) * PhotoMagnification
 PictureWidth = PhotoPictureWidth * Magnification / PhotoMagnification
-PictureHeight = PictureWidth * img_height/img_width
-miniGraSize=minSize/PictureWidth #（認識させる最小サイズ）/（画像の幅）
+PictureHeight = PictureWidth * img_height / img_width
+miniGraSize=minSize / PictureWidth #（認識させる最小サイズ）/（画像の幅）
 
 #3個の同心円の半径を計算
-Radius1 = 79.58/2/PictureWidth
-Radius2 = 53.05/2/PictureWidth
-Radius3 = 26.53/2/PictureWidth
-miniGraSize=10/PictureWidth #（認識させる最小サイズ）/（画像の幅）
+Radius1 = 79.58 / 2 / PictureWidth
+Radius2 = 53.05 / 2 / PictureWidth
+Radius3 = 26.53 / 2 / PictureWidth
+miniGraSize = 10 / PictureWidth #（認識させる最小サイズ）/（画像の幅）
 
 #リサイズ後のimg_colorのクローン
 copy_img_color = img_color.copy()
 
 #img_grayを反転二値化してimg_gray_inv_binaryに代入、二値化閾値は大津の二値化を使用
-ret, img_gray_inv_binary=cv2.threshold(img_gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-contours, hier = cv2.findContours(img_gray_inv_binary,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+ret, img_gray_inv_binary=cv2.threshold(img_gray, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+contours, hier = cv2.findContours(img_gray_inv_binary, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
 #各輪郭について最小外接円を求め、その円の半径がwidth*miniGraSizeより小さい輪郭をcontours1に格納
 #その輪郭内を塗りつぶし
-contours1 = [e for e in contours if int(Width * miniGraSize)  > int(cv2.minEnclosingCircle(e)[1]*2)]
+contours1 = [e for e in contours if int(Width * miniGraSize)  > int(cv2.minEnclosingCircle(e)[1] * 2)]
 
 cv2.drawContours(img_gray_inv_binary, contours1, -1, (0, 0, 0), -1)
 
@@ -218,4 +237,3 @@ src = fname
 idx = src.rfind(r".")
 result_filename = (src[:idx] + "_result." + src[idx + 1 :])
 cv2.imwrite(result_filename, copy_img_color)
-
