@@ -96,7 +96,7 @@ def DrawFigure():
     point_num_per_1mm = points_num / (500 / Magnification)
 	# G0551の式A.11と式A.14の関係を使用（A.11からG(ASTM)を求め、それA.14を使ってGに変換）
     grain_number = -3.3335 + 6.6439 * math.log10(point_num_per_1mm)
-    print(f'\nMethod : {Method}')
+    print(f'\nTypes of test lines : {Method}')
     print(f'Magnification (for picture height = {AnalysisPictureHeight:.0f} mm): {Magnification:.0f}')
     print(f'Number of grain boundaries : {points_num}')
     print(f'Number of grain boundaries per 1 mm : {point_num_per_1mm:.1f}')
