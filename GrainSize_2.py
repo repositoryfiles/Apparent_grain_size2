@@ -157,7 +157,7 @@ def generate_testline_point():
             testline_pts.append([y4, x4])
 
 
-#ファイル選択（c:\Dataの拡張子jpgを開く場合）
+#ファイル選択（c:\Dataの画像ファイルを開く場合）
 root=tkinter.Tk()
 root.withdraw()
 fTyp = [("jpg", "*.jpg"), ("BMP", "*.bmp"), ("png", "*.png"), ("tiff", "*.tif")] #画像の種類を選択
