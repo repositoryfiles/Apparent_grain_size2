@@ -11,7 +11,7 @@ pts = []
 testline_pts = []
 
 n = 0
-Method = 'Lines' # 'Circles' または 'Lines' を指定
+Method = 'Circles' # 'Circles' または 'Lines' を指定
 
 # PhotoPictureWidthとPhotoMagnificationは撮影環境により変わるため、組織画像に合致した値に設定すること！
 # 以下のPhotoPictureWidthとPhotoMagnificationは、画像を幅142mmで表示すると、倍率1000倍の組織画像になるという設定である
